@@ -1,7 +1,3 @@
-from array import array
-from cmath import inf
-from tkinter import E
-from turtle import shape
 import numpy as np
 import numpy.ma as ma
 
@@ -14,11 +10,12 @@ def solve_simplex(A,b,c):
 
   while not check_opt(step):
     step = iterate(step)
-    if input("Press Enter to continue...") == "c":
-        return print("run aborted!")
+    """ if input("Press Enter to continue...") == "c":
+        return print("run aborted!") """
     print(step)
 
-  print("optimal solution is found to be:{}\nwith basic variable values: {}".format(step[0,-1], return_vars(step)))
+  bv_values = bv_nbv(step)[2]
+  print("optimal solution is found to be:{}\nwith basic variable values: {}".format(step[0,-1], bv_values[1:]))
 
 def std_form(A,b,c):
     assert c.shape[0] == 1
@@ -44,7 +41,7 @@ def pivot(step):
   v = np.argmin(step[0,1:]) + 1 #+1 is used to skip over the coefficient of the objective variable z in the 0th row
   
   temp_col = step[1:,-1]/step[1:,v]
-  p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = inf))
+  p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = np.inf))
   return p+1,v
 
 def iterate(step):
@@ -60,17 +57,21 @@ def iterate(step):
 
 def bv_nbv(step):
     bv = []
+    bv_values = []
     nbv = []
 
     for j in range(step.shape[1]-1):
         isitbv = bool
 
         ones = 0
+        one_idx = None
         zeros = 0
         other = 0
+
         for i in range(step.shape[0]):
             if step[i,j] == 1:
-                ones = ones +1 
+                ones = ones +1
+                one_idx = i 
             elif step[i,j] == 0:
                 zeros = zeros +1
             else:
@@ -80,7 +81,8 @@ def bv_nbv(step):
 
         if isitbv:
             bv.append(j)
+            bv_values.append(step[one_idx,-1])
         else:
             nbv.append(j)
 
-    return bv, nbv
+    return bv, nbv, bv_values
