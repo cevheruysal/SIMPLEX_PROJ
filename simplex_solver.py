@@ -1,4 +1,7 @@
+from cmath import inf
 import numpy as np
+import numpy.ma as ma
+
 np.set_printoptions(suppress=True, precision=2)
 
 def solve_simplex(A,b,c):
@@ -30,8 +33,10 @@ def check_opt(step) -> bool:
   return not np.any(step[0,1:]<0)
 
 def pivot(step):
-  v = np.argmin(step[0,1:])+1
-  p = np.argmin(step[1:,-1]/step[1:,v])
+  v = np.argmin(step[0,1:]) + 1 #+1 is used to skip over the coefficient of the objective variable z in the 0th row
+  
+  temp_col = step[1:,-1]/step[1:,v]
+  p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = inf))
   return p+1,v
 
 def iterate(step):
