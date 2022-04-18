@@ -4,7 +4,7 @@ import numpy.ma as ma
 np.set_printoptions(suppress=True, precision=2)
 
 def solve_simplex(A,b,c):
-  step = std_form(A,b,c)
+  step = std_tableau(A,b,c)
 
   print(step)
 
@@ -17,7 +17,7 @@ def solve_simplex(A,b,c):
   bv_values = bv_nbv(step)[2]
   print("optimal solution is found to be:{}\nwith basic variable values: {}".format(step[0,-1], bv_values[1:]))
 
-def std_form(A,b,c):
+def std_tableau(A,b,c):
     assert c.shape[0] == 1
     assert c.shape[1] == A.shape[1]
     assert A.shape[0] == b.shape[0]
