@@ -20,6 +20,8 @@ def solve_simplex(A,b,c):
 
   while not check_opt(step):
     step = iterate(step)
+    if input("Press Enter to continue...") == "c"
+        return print("run aborted!")
     print(step)
 
   print("optimal solution is found to be:{}\nwith basic variable values: {}".format(step[0,-1], step[1:,-1].flatten()))
