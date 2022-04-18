@@ -70,11 +70,11 @@ def bv_nbv(step):
         other = 0
         for i = 1 to step.shape[0]:
             if step[i,j] == 1:
-                ones++
+                ones = ones +1 
             elif step[i,j] == 0:
-                zeros++
+                zeros = zeros +1
             else:
-                other++
+                other = other +1
             
         isitbv = (ones == 1 and other == 0)
 
