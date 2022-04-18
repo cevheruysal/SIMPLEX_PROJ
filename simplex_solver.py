@@ -20,7 +20,7 @@ def solve_simplex(A,b,c):
 
   while not check_opt(step):
     step = iterate(step)
-    if input("Press Enter to continue...") == "c"
+    if input("Press Enter to continue...") == "c":
         return print("run aborted!")
     print(step)
 
