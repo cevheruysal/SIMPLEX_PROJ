@@ -62,13 +62,13 @@ def bv_nbv(step):
     bv = []
     nbv = []
 
-    for j = 1 to step.shape[1]:
+    for j in range(step.shape[1]-1):
         isitbv = bool
 
         ones = 0
         zeros = 0
         other = 0
-        for i = 1 to step.shape[0]:
+        for i in range(step.shape[0]):
             if step[i,j] == 1:
                 ones = ones +1 
             elif step[i,j] == 0:
