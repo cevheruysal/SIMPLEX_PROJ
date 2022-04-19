@@ -23,12 +23,15 @@ bv, nbv = ss.bv_nbv(st1)
 print(bv,nbv) """
 #x1  = 20, x2 = 60 @ optimal solution 
 
-eq1 = expre.expr("2x_1 +x_2 <= 5")
-eq2 = expre.expr("2x_1 >= 3")
-obj = expre.expr("z_0 := x_1 +x_2")
+eq1 = expre.expr("2x_1 +x_2 <= 100")
+eq2 = expre.expr("x_1 +x_2 <= 80")
+eq3 = expre.expr("x_1 <= 40")
+obj = expre.expr("z_0 := 3x_1 +2x_2")
 
-eqs = (eq1, eq2)
+eqs = (eq1, eq2, eq3)
 
 lp = linp.LP(obj, eqs)
 
-print(lp.constructAbc())
+lp.constructAbc()
+
+ss.solve_simplex(lp.std_tableau)

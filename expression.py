@@ -27,7 +27,7 @@ class expr():
 
     def parse2mono(self):
         #monomial_pattern = r"([+-])?(\d)?([a-z]_\d+)?\^?(\d+)?"
-        monomial_pattern = r"([+-])?(\d)?([a-z]_\d+)?"
+        monomial_pattern = r"([+-])?(\d+)?([a-z]_\d+)?"
 
         [lhs, rhs] = self.parse()
 

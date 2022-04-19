@@ -6,6 +6,7 @@ class LP():
         self.obj = objective
         self.sto = equations
         self.distinct_vars = None
+        self.std_tableau = None
 
     def constructAbc(self):
         distinct_vars = {}
@@ -40,9 +41,10 @@ class LP():
         std_form_cA = np.zeros((len(self.sto) + 1, len(self.distinct_vars)))
         for j in range(len(self.distinct_vars)):
             for i in range(len(self.sto)+1):
-                if distinct_vars[j] in cnn[i]:
-                    std_form_cA[i,j] = cnn[i][distinct_vars[j]]
+                if self.distinct_vars[j] in cnn[i]:
+                    std_form_cA[i,j] = cnn[i][self.distinct_vars[j]]
 
         std_form_0b = np.transpose(np.asmatrix(b))
+        self.std_tableau = np.concatenate((std_form_cA, std_form_0b), axis = -1)
 
-        return std_form_cA, std_form_0b
+        return True
