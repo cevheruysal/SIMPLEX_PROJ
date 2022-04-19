@@ -1,9 +1,11 @@
-class LP():
-    import expression as exp
+import expression as exp
+import numpy as np
 
+class LP():
     def __init__(self, objective, equations):
         self.obj = objective
         self.sto = equations
+        self.distinct_vars = None
 
     def constructAbc(self):
         distinct_vars = {}
@@ -33,4 +35,14 @@ class LP():
                 else:
                     distinct_vars[len(distinct_vars)] = v
 
-        return distinct_vars
+        self.distinct_vars = distinct_vars
+
+        std_form_cA = np.zeros((len(self.sto) + 1, len(self.distinct_vars)))
+        for j in range(len(self.distinct_vars)):
+            for i in range(len(self.sto)+1):
+                if distinct_vars[j] in cnn[i]:
+                    std_form_cA[i,j] = cnn[i][distinct_vars[j]]
+
+        std_form_0b = np.transpose(np.asmatrix(b))
+
+        return std_form_cA, std_form_0b
