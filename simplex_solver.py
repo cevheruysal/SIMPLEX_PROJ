@@ -3,8 +3,8 @@ import numpy.ma as ma
 
 np.set_printoptions(suppress=True, precision=2)
 
-def solve_simplex(A,b,c):
-  step = std_tableau(A,b,c)
+def solve_simplex(std_form, var_names=None):
+  step = std_form
 
   print(step)
 
@@ -12,6 +12,20 @@ def solve_simplex(A,b,c):
     step = iterate(step)
     """ if input("Press Enter to continue...") == "c":
         return print("run aborted!") """
+    print(step)
+
+  bv, nbv, bv_values = bv_nbv(step)
+  print("optimal solution is found to be:{}\nwith basic variables valued at: {}".format(step[0,-1], bv_values[1:]))
+
+"""def solve_simplex(A,b,c):
+  step = std_tableau(A,b,c)
+
+  print(step)
+
+  while not check_opt(step):
+    step = iterate(step)
+    ''' if input("Press Enter to continue...") == "c":
+        return print("run aborted!") '''
     print(step)
 
   bv_values = bv_nbv(step)[2]
@@ -32,7 +46,7 @@ def std_tableau(A,b,c):
 
     step = np.concatenate((temp, temp0, temp1, temp2), axis = -1)
      
-    return step
+    return step"""
 
 def check_opt(step) -> bool:
   return not np.any(step[0,1:]<0)
