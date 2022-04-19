@@ -1,6 +1,6 @@
 import simplex_solver as ss
 import linear_program as linp
-import expression as expre
+import expression as ex
 import numpy as np
 
 """A = np.mat([[2,1],[1,1],[1,0]])
@@ -23,10 +23,10 @@ bv, nbv = ss.bv_nbv(st1)
 print(bv,nbv) """
 #x1  = 20, x2 = 60 @ optimal solution 
 
-eq1 = expre.expr("2x_1 +x_2 <= 100")
-eq2 = expre.expr("x_1 +x_2 <= 80")
-eq3 = expre.expr("x_1 <= 40")
-obj = expre.expr("z_0 := 3x_1 +2x_2")
+eq1 = ex.expr("2x_1 +x_2 <= 100")
+eq2 = ex.expr("x_1 +x_2 <= 80")
+eq3 = ex.expr("x_1 <= 40")
+obj = ex.expr("z_0 := 3x_1 +2x_2")
 
 eqs = (eq1, eq2, eq3)
 
