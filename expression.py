@@ -82,6 +82,7 @@ class expr():
 
         for item in self.lhs_monos:
             if item['type'] == 'CONS':
+                print(item['vName'])
                 b_i = b_i - item['coef']
 
         return cnn_row, b_i
@@ -112,23 +113,20 @@ class expr():
         return monos
     
     def canon_row_2phs(self):
-        cnn_row_2phs = {}
-
         cnn_row, b_i = self.canon_row()
         new_tip = {"<=":">=" ,">=":"<=" ,"=":"="}
 
-        artp = {'coef':+1, 'vName':"a_"+str(self.id), 'type':'ARTF'}
-        artm = {'coef':-1, 'vName':"a_"+str(self.id), 'type':'ARTF'}
+        artf = {'coef':+1, 'vName':"a_"+str(self.id), 'type':'ARTF'}
         
         if b_i < 0:
-            b_i_2phs = -b_i
+            b_i = -b_i
             self.tip = new_tip[self.tip]
 
             for item in cnn_row.items():
-                cnn_row_2phs[item[0]] = -item[1]
+                cnn_row[item[0]] = -item[1]
 
         if self.tip == "=" or self.tip == ">=":
-            self.lhs_monos.append(artm)
-            cnn_row_2phs[artp['vName']] = artp['coef'] 
+            self.lhs_monos.append(artf)
+            cnn_row[artf['vName']] = artf['coef'] 
 
-        return cnn_row_2phs, b_i_2phs
+        return cnn_row, b_i
