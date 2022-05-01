@@ -59,7 +59,7 @@ class LP():
         return True
 
     def constructPhs1str(self, id = 0):
-        phs1str = "w :="
+        phs1str = "w_0 :="
         for eq in self.sto:
             print(eq.rhs_monos)
             for mono in eq.lhs_monos:
