@@ -3,19 +3,25 @@ import numpy.ma as ma
 
 np.set_printoptions(suppress=True, precision=2)
 
-def solve_simplex(std_form, var_names=None):
+def solve_simplex(std_form, obj_type="max"):
   step = std_form
 
   print(step)
 
-  while not check_opt(step):
-    step = iterate(step)
+  while not check_opt(step, obj_type):
+    input("devam?: ")
+    i,j = pivot(step, obj_type)
+    print(i,j)
+    step = iterate(step, i,j)
     print(step)
 
   bv, nbv, bv_values = bv_nbv(step)
   print(f"optimal solution is found to be:{step[0,-1]}\nwith basic variables valued at: {bv_values[1:]}")
+  
+  return step[0,-1]
 
-"""def solve_simplex(A,b,c):
+""" more primitive simplex solver when A, b, c is explicitly given
+def solve_simplex(A,b,c):
   step = std_tableau(A,b,c)
 
   print(step)
@@ -46,18 +52,57 @@ def std_tableau(A,b,c):
      
     return step"""
 
-def check_opt(step) -> bool:
-  return not np.any(step[0,1:]<0)
+def solve_2phs_simplex(std_form, obj_type):
+  # todo : add the function that transforms the std_forms for the corresponding phases ,
+         # add 3 of the cases that can happen after phase 1
+  #std_form_phs1 = somefunc(std_form)
+  w_prime, phs1_output = solve_phs1(std_form_phs1)
 
-def pivot(step):
-  v = np.argmin(step[0,1:]) + 1 #+1 is used to skip over the coefficient of the objective variable z in the 0th row
+  if round(w_prime, 10) == 0:
+    std_form
+    solve_phs2(, obj_type)
+  #elif
+   
+def solve_phs1(std_form):
+  obj_type = "min"
+
+  for j in range(std_form.shape[1]-2):
+    if std_form[0, j+1] != 0:
+      for i in range(std_form.shape[0]-1):
+        if std_form[i+1, j+1] != 0:
+          std_form[0,:] = std_form[0,:] + std_form[i+1,:]
   
-  temp_col = step[1:,-1]/step[1:,v]
-  p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = np.inf))
+  return solve_simplex(std_form, obj_type), std_form
+
+def solve_phs2(std_form):
+  pass
+
+def check_opt(step, obj_type) -> bool:
+  if obj_type == "max":
+    return not np.any(step[0,1:]<0)
+  elif obj_type == "min":
+    return not np.any(step[0,1:]>0)
+
+def pivot(step, obj_type):
+  if obj_type == "max":
+    v = np.argmin(step[0,1:-1]) + 1 #+1 is used to skip over the coefficient of the objective variable z in the 0th row
+    
+    #temp_col = step[1:,-1]/step[1:,v]
+    temp_col = ma.array(step[1:,-1]/step[1:,v], mask = step[1:,v] == 0, fill_value = np.inf)
+    p = np.argmin(temp_col)
+    #p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = np.inf))
+
+  elif obj_type == "min":
+    v = np.argmax(step[0,1:-1]) + 1 #+1 is used to skip over the coefficient of the objective variable z in the 0th row
+    
+    #temp_col = step[1:,-1]/step[1:,v]
+    temp_col = ma.array(step[1:,-1]/step[1:,v], mask = step[1:,v] == 0, fill_value = np.inf)
+    p = np.argmin(temp_col)
+    #p = np.argmin(ma.array(temp_col, mask = temp_col < 0, fill_value = np.inf))
+
   return p+1,v
 
-def iterate(step):
-  i,j = pivot(step)
+def iterate(step, i,j):
   new_step = np.zeros(step.shape)
 
   new_step[i,:] = step[i,:] / step[i,j]
