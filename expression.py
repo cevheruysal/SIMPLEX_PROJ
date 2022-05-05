@@ -2,7 +2,7 @@ import re
   
 class expr():
 
-    def __init__(self, exp:str, ID=None):
+    def __init__(self, exp:str, ID:int=None):
         """an expression is inputted in the form: 'lhs {operator} rhs' 
         rhs must only include a constant while all remaining monomials must be in the lhs
         {operator} must be one of the following: <=, >=, =
@@ -15,18 +15,8 @@ class expr():
         self.lhs_monos = []
         self.rhs_monos = []
 
-    def parse(self):
-        opers = re.split(",", r" <= , >= , = , := ")
-
-        for oper in opers:
-            if re.search(oper,self.exp):
-            
-                self.tip = oper.strip()
-            
-                return re.split(oper, self.exp)
-
+    
     def parse2mono(self):
-        #monomial_pattern = r"([+-])?(\d)?([a-z]_\d+)?\^?(\d+)?"
         monomial_pattern = r"([+-])?(\d+)?([a-z]_\d+)?"
 
         [lhs, rhs] = self.parse()
@@ -48,44 +38,15 @@ class expr():
 
         return True
 
-    def canon_row(self):
-        cnn_row = {}
-        b_i = 0
+    def parse(self):
+            opers = re.split(",", r" <= , >= , = , := ")
 
-        slck = {'coef':+1, 'vName':"s_"+str(self.id), 'type':'SLCK'}
-        surp = {'coef':-1, 'vName':"e_"+str(self.id), 'type':'SURP'}
-
-        if self.tip == "=":
-            self.lhs_monos.append(slck)
-            self.lhs_monos.append(surp)
-        elif self.tip == "<=":
-            self.lhs_monos.append(slck)
-        elif self.tip == ">=":
-            self.lhs_monos.append(surp)
-
-        for item in self.lhs_monos:
-            if item['type'] == 'VAR' and item['vName'] in cnn_row.keys():
-               cnn_row[item['vName']] = cnn_row[item['vName']] + item['coef']
-            elif item['type'] == 'VAR' or item['type'] == 'SLCK' or item['type'] == 'SURP':
-                cnn_row[item['vName']] = item['coef']
-
-        for item in self.rhs_monos:
-            if item['type'] == 'VAR' and item['vName'] in cnn_row.keys():
-                cnn_row[item['vName']] = cnn_row[item['vName']] - item['coef']
-            elif item['type'] == 'VAR':
-                cnn_row[item['vName']] = -item['coef']
-
-
-        for item in self.rhs_monos:
-            if item['type'] == 'CONS':
-                b_i = b_i + item['coef']
-
-        for item in self.lhs_monos:
-            if item['type'] == 'CONS':
-                print(item['vName'])
-                b_i = b_i - item['coef']
-
-        return cnn_row, b_i
+            for oper in opers:
+                if re.search(oper, self.exp):
+                
+                    self.tip = oper.strip()
+                
+                    return re.split(oper, self.exp)
 
     def monoms(self, temp_mono):
         monos = {'coef':None, 'vName':None, 'type':'VAR'}
@@ -111,6 +72,44 @@ class expr():
                     monos['coef'] = float(temp_mono.group(1)+temp_mono.group(2))
 
         return monos
+
+
+    def canon_row(self):
+        cnn_row = {}
+        b_i = 0
+
+        slck = {'coef':+1, 'vName':"s_"+str(self.id), 'type':'SLCK'}
+        surp = {'coef':-1, 'vName':"e_"+str(self.id), 'type':'SURP'}
+
+        if self.tip == "=":
+            # self.lhs_monos.append(slck)
+            # self.lhs_monos.append(surp)
+            pass
+        elif self.tip == "<=":
+            self.lhs_monos.append(slck)
+        elif self.tip == ">=":
+            self.lhs_monos.append(surp)
+
+        for item in self.lhs_monos:
+            if item['type'] == 'VAR' and item['vName'] in cnn_row.keys():
+               cnn_row[item['vName']] = cnn_row[item['vName']] + item['coef']
+            elif item['type'] == 'VAR' or item['type'] == 'SLCK' or item['type'] == 'SURP':
+                cnn_row[item['vName']] = item['coef']
+
+            elif item['type'] == 'CONS':
+                b_i = b_i - item['coef']
+
+        for item in self.rhs_monos:
+            if item['type'] == 'VAR' and item['vName'] in cnn_row.keys():
+                cnn_row[item['vName']] = cnn_row[item['vName']] - item['coef']
+            elif item['type'] == 'VAR':
+                cnn_row[item['vName']] = -item['coef']
+
+            elif item['type'] == 'CONS':
+                b_i = b_i + item['coef']
+            
+        return cnn_row, b_i
+
     
     def canon_row_2phs(self):
         cnn_row, b_i = self.canon_row()
