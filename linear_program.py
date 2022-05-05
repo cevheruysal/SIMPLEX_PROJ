@@ -24,7 +24,7 @@ class LP():
         return cnn, b
 
     def constructAbc(self):
-        distinct_vars = []
+        d_vs = []
 
         b = []
         cnn = []
@@ -41,18 +41,19 @@ class LP():
         alph = {"z":0, "w":1, "x":2, "s":3, "e":3, "a":4}
         for item in cnn:
             for v in item.keys():
-                if v in distinct_vars.values():
+                if v in d_vs.values():
                     pass
                 else:
                     appended = False
-                    for idx, vs in enumerate(distinct_vars):
-                        if alph[vs[0]] > alph[v[0]]:
+                    for idx in range(len(d_vs)):
+                        if alph[v[0]] < alph[d_vs[idx][0]]:
                             appended = True
-                            distinct_vars.insert(idx, v)
+                            d_vs.insert(idx, v)
+                            break
                     if not appended:
-                        distinct_vars.append(v)
+                        d_vs.append(v)
 
-        self.distinct_vars = distinct_vars
+        self.distinct_vars = d_vs
 
         std_form_cA = np.zeros((len(self.sto) + 1, len(self.distinct_vars)))
         for j in range(len(self.distinct_vars)):
@@ -100,6 +101,7 @@ class LP():
                         if alph[v[0]] < alph[d_vs[idx][0]]:
                             appended = True
                             d_vs.insert(idx, v)
+                            break
                     if not appended:
                         d_vs.append(v)
 
