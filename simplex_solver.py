@@ -10,12 +10,10 @@ def solve_simplex(std_form, var_names=None):
 
   while not check_opt(step):
     step = iterate(step)
-    """ if input("Press Enter to continue...") == "c":
-        return print("run aborted!") """
     print(step)
 
   bv, nbv, bv_values = bv_nbv(step)
-  print("optimal solution is found to be:{}\nwith basic variables valued at: {}".format(step[0,-1], bv_values[1:]))
+  print(f"optimal solution is found to be:{step[0,-1]}\nwith basic variables valued at: {bv_values[1:]}")
 
 """def solve_simplex(A,b,c):
   step = std_tableau(A,b,c)
