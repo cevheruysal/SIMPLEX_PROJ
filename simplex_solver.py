@@ -60,7 +60,7 @@ def solve_2phs_simplex(std_form, obj_type):
 
   if round(w_prime, 10) == 0:
     std_form
-    solve_phs2(, obj_type)
+    solve_phs2(obj_type)
   #elif
    
 def solve_phs1(std_form):
