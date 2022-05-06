@@ -36,6 +36,6 @@ lp = linp.LP(obj, eqs)
 # lp.constructPhs1()
 # print(lp.std_tableau)
 
-print(ss.solve_lp(lp, "max", True))
+print(ss.solve_lp(lp, "min", True))
 # lp.obj.parse2mono()
 # print(lp.obj.canon_row())

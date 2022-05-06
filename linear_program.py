@@ -16,11 +16,13 @@ class LP():
             
             if not _2phs:
                 cnn_i, b_i = eq.canon_row()
+
             else:
                 cnn_i, b_i = eq.canon_row_2phs()
 
             cnn.append(cnn_i)
             b.append(b_i)
+
         return cnn, b
 
     def constructAbc(self):
@@ -43,19 +45,24 @@ class LP():
             for v in item.keys():
                 if v in d_vs:
                     pass
+
                 else:
                     appended = False
+
                     for idx in range(len(d_vs)):
                         if alph[v[0]] < alph[d_vs[idx][0]]:
                             appended = True
                             d_vs.insert(idx, v)
+                            
                             break
+
                     if not appended:
                         d_vs.append(v)
 
         self.distinct_vars = d_vs
 
         std_form_cA = np.zeros((len(self.sto) + 1, len(self.distinct_vars)))
+
         for j in range(len(self.distinct_vars)):
             for i in range(len(self.sto)+1):
                 if self.distinct_vars[j] in cnn[i]:
@@ -68,10 +75,12 @@ class LP():
 
     def constructPhs1str(self, id = 0):
         phs1str = "w_0lin :="
+
         for eq in self.sto:
             for mono in eq.lhs_monos:
                 if mono['type'] == "ARTF":
                     phs1str = phs1str + " " + str(mono['coef']) + mono['vName']
+
         return exp.expr(phs1str, id)
 
     def constructPhs1(self):
@@ -91,23 +100,29 @@ class LP():
         cnn.insert(0, cnn_0)
 
         alph = {"z":0, "w":1, "x":2, "s":3, "e":3, "a":4}
+
         for item in cnn:
             for v in item.keys():
                 if v in d_vs:
                     pass
+
                 else:
                     appended = False
+
                     for idx in range(len(d_vs)):
                         if alph[v[0]] < alph[d_vs[idx][0]]:
                             appended = True
                             d_vs.insert(idx, v)
+
                             break
+
                     if not appended:
                         d_vs.append(v)
 
         self.distinct_vars = d_vs
 
         std_form_cA = np.zeros((len(self.sto) + 1, len(self.distinct_vars)))
+
         for j in range(len(self.distinct_vars)):
             for i in range(len(self.sto)+1):
                 if self.distinct_vars[j] in cnn[i]:
@@ -124,16 +139,19 @@ class LP():
         temp_distincvars = self.distinct_vars.copy()
         print(std_tableau_phs2)
         i = 0
+
         while i < std_tableau_phs2.shape[1]-1:
             if std_tableau_phs2[0, i] < -1e-10:
                 std_tableau_phs2 = np.delete(std_tableau_phs2, i, 1)
                 temp_distincvars.pop(i)
                 print(std_tableau_phs2)
+
             else:
                 i = i+1
         
         self.obj.parse2mono()
         old_cnn_row = self.obj.canon_row()[0]
+        
         for i, vars in enumerate(temp_distincvars):
             if vars in old_cnn_row.keys():
                 std_tableau_phs2[0, i] = old_cnn_row[vars]
