@@ -33,9 +33,9 @@ eqs = (eq1, eq2, eq3)
 lp = linp.LP(obj, eqs)
 
 #lp.constructAbc()
+# lp.constructPhs1()
+# print(lp.std_tableau)
 
-#ss.solve_simplex(lp.std_tableau)
-
-lp.constructPhs1()
-
-print(lp.sto[0].rhs_monos)
+print(ss.solve_lp(lp, "max", True))
+# lp.obj.parse2mono()
+# print(lp.obj.canon_row())
