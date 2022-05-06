@@ -48,7 +48,8 @@ class expr():
 
 				return re.split(oper, self.exp)
 
-		raise Exception("please use one of the following operators in your equations/objective function: <=, >=, =, :=")
+		raise Exception("please use one of the following operators in your equations/objective function: <=, >=, =, :="+
+						"\n"+ "you may also don't have any artificial variables in you LP so try using normal simplex instead?")
 
 	def monoms(self, temp_mono):
 		monos = {'coef':None, 'vName':None, 'type':'VAR'}
@@ -110,7 +111,7 @@ class expr():
 		for item in self.rhs_monos:
 			if item['type'] == 'VAR' and item['vName'] in cnn_row.keys():
 				cnn_row[item['vName']] = cnn_row[item['vName']] - item['coef']
-				
+
 			elif item['type'] == 'VAR':
 				cnn_row[item['vName']] = -item['coef']
 

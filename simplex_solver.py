@@ -5,35 +5,39 @@ import linear_program as linp
 np.set_printoptions(suppress=True, precision=2)
 
 def solve_lp(lp:linp.LP, obj_type:str = "max", _2phs:bool = False):
+	# TO DO: big M method
+
+	msg = obj_type + "imizing " + lp.obj.exp
+	print(msg) #muhakkak kalacak bir print
+	print("subject to equations:")
+	for eq in lp.sto:
+		msg = "              " + eq.exp
+		print(msg) #muhakkak kalacak bir print
+	print("\n")
+
 	if _2phs:
 		return solve_2phs_simplex(lp, obj_type)
 
 	else:
 		lp.constructAbc()
 		
+		msg = "solve_simplex start:\n"
+		print("solve_simplex start:" + (90-len(msg))*"-" + "\n", lp.std_tableau) #muhakkak kalacak bir print
+
 		obj_val, fin_tabl = solve_simplex(lp.std_tableau, obj_type)
 		bv, nbv = bv_nbv(fin_tabl, lp.distinct_vars)
-		
-		print(bv)
 
-		print(f"optimal solution is found to be:{obj_val}\nwith basic variables valued at: {bv.values()[1:]}")
+		print(f"optimal solution is found to be:{obj_val}\nwith basic variables valued at: {bv}")
 
 def solve_simplex(std_form, obj_type="max"):
 	step = std_form
 
-	print(step)
-
 	while not check_opt(step, obj_type):
-		a = input("devam?: ")
-
-		if a == "0":
-			i,j = pivot(step, obj_type)
-			print(i,j)
-			step = iterate(step, i,j)
-			print(step)
-
-		else:
-			return False
+		i,j = pivot(step, obj_type)
+		step = iterate(step, i,j)
+		
+	msg = "solve_simplex end:"
+	print(msg + (90-len(msg))*"-" + "\n", step) #muhakkak kalacak bir print
 	
 	return step[0,-1], step
 
@@ -42,12 +46,20 @@ def solve_2phs_simplex(lp: linp.LP, obj_type):
 			# add 3 of the cases that can happen after phase 1
 	lp.constructPhs1()
 	std_form_phs1 = lp.std_tableau
+
+	msg = "solve_2phs_simplex phase 1 initial tableau:"
+	print(msg + (90-len(msg))*"-" + "\n", std_form_phs1) #muhakkak kalacak bir print
+
 	w_prime, phs1_output = solve_phs1(std_form_phs1)
-	print(phs1_output)
+	
+	msg = "solve_2phs_simplex phase 1 output:"
+	print(msg + (90-len(msg))*"-" + "\n", phs1_output) #muhakkak kalacak bir print
 
 	if round(w_prime, 10) == 0:
-		# print(lp.constructPhs2(phs1_output))
 		std_form_phs2 = lp.constructPhs2(phs1_output) 
+
+		msg = "solve_2phs_simplex phase 2 input:"
+		print(msg + (90-len(msg))*"-" + "\n", std_form_phs2) #muhakkak kalacak bir print
 
 		return solve_phs2(std_form_phs2, obj_type)
 
@@ -58,16 +70,12 @@ def solve_2phs_simplex(lp: linp.LP, obj_type):
 	#elif
 	
 def solve_phs1(std_form):
-	print(std_form)
-
 	for j in range(std_form.shape[1]-2):
 		if std_form[0, j+1] != 0:
 			for i in range(std_form.shape[0]-1):
 				if std_form[i+1, j+1] != 0:
 					std_form[0,:] = std_form[0,:] + std_form[i+1,:]
 
-	# print(std_form)
-	
 	return solve_simplex(std_form, "min")
 
 def solve_phs2(std_form, obj_type):
@@ -76,10 +84,10 @@ def solve_phs2(std_form, obj_type):
 
 def check_opt(step, obj_type) -> bool:
 	if obj_type == "max":
-		return not np.any(step[0,1:]<0)
+		return not np.any(step[0,1:-1]<0)
 
 	elif obj_type == "min":
-		return not np.any(step[0,1:]>0)
+		return not np.any(step[0,1:-1]>0)
 
 def pivot(step, obj_type):
 	if obj_type == "max":
@@ -134,7 +142,7 @@ def bv_nbv(step, d_vs):
 		if isitbv:
 			bv.append(d_vs[j])
 			bv_values.append(step[one_idx,-1])
-			
+
 		else:
 			nbv.append(d_vs[j])
 

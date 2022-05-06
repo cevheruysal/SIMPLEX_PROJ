@@ -1,7 +1,11 @@
 import expression as exp
 import numpy as np
+import simplex_solver as ss
 
 class LP():
+    # TO DO: some way to handle urs (unrestricted in sign) variables
+           # goal programming
+    
     def __init__(self, objective:exp.expr, equations:tuple):
         self.obj = objective
         self.sto = equations
@@ -137,23 +141,28 @@ class LP():
     def constructPhs2(self, phs1_output):
         std_tableau_phs2 = phs1_output
         temp_distincvars = self.distinct_vars.copy()
-        print(std_tableau_phs2)
-        i = 0
-
-        while i < std_tableau_phs2.shape[1]-1:
-            if std_tableau_phs2[0, i] < -1e-10:
-                std_tableau_phs2 = np.delete(std_tableau_phs2, i, 1)
-                temp_distincvars.pop(i)
-                print(std_tableau_phs2)
-
+        phs1_bv, nbv = ss.bv_nbv(phs1_output, temp_distincvars)
+        
+        j = 0
+        while j < std_tableau_phs2.shape[1]-1:
+            if std_tableau_phs2[0, j] < -1e-10:
+                std_tableau_phs2 = np.delete(std_tableau_phs2, j, 1)
+                temp_distincvars.pop(j)
+        
             else:
-                i = i+1
+                j = j+1
         
         self.obj.parse2mono()
         old_cnn_row = self.obj.canon_row()[0]
-        
+
         for i, vars in enumerate(temp_distincvars):
             if vars in old_cnn_row.keys():
                 std_tableau_phs2[0, i] = old_cnn_row[vars]
+
+        for j, v in zip(range(std_tableau_phs2.shape[1]-1), temp_distincvars):
+            if std_tableau_phs2[0, j] < -1e-10 and v in phs1_bv.keys():
+                for i in range(std_tableau_phs2.shape[0]-1):
+                    if std_tableau_phs2[i+1, j] == 1:
+                        std_tableau_phs2[0, :] = std_tableau_phs2[0, :] - std_tableau_phs2[0, j] * std_tableau_phs2[i+1, :]
 
         return std_tableau_phs2
