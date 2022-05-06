@@ -82,6 +82,9 @@ def solve_phs1(std_form):
 				if std_form[i+1, j+1] != 0:
 					std_form[0,:] = std_form[0,:] + std_form[i+1,:]
 
+	msg = "solve_phs1 end:"
+	print(msg + (90-len(msg))*"-" + "\n", std_form) #muhakkak kalacak bir print
+
 	return solve_simplex(std_form, "min")
 
 def solve_phs2(std_form, obj_type):
