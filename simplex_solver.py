@@ -24,10 +24,11 @@ def solve_lp(lp:linp.LP, obj_type:str = "max", _2phs:bool = False):
 		msg = "solve_simplex start:\n"
 		print("solve_simplex start:" + (90-len(msg))*"-" + "\n", lp.std_tableau) #muhakkak kalacak bir print
 
-		obj_val, fin_tabl = solve_simplex(lp.std_tableau, obj_type)
+		fin_tabl = solve_simplex(lp.std_tableau, obj_type)
 		bv, nbv = bv_nbv(fin_tabl, lp.distinct_vars)
 
-		print(f"optimal solution is found to be:{obj_val}\nwith basic variables valued at: {bv}")
+		print(f"optimal solution is found to be:{fin_tabl[0,-1]}\nwith basic variables valued at: {bv}")
+
 
 def solve_simplex(std_form, obj_type="max"):
 	step = std_form
@@ -39,7 +40,8 @@ def solve_simplex(std_form, obj_type="max"):
 	msg = "solve_simplex end:"
 	print(msg + (90-len(msg))*"-" + "\n", step) #muhakkak kalacak bir print
 	
-	return step[0,-1], step
+	return step
+
 
 def solve_2phs_simplex(lp: linp.LP, obj_type):
 	# todo : add the function that transforms the std_forms for the corresponding phases ,
@@ -50,8 +52,9 @@ def solve_2phs_simplex(lp: linp.LP, obj_type):
 	msg = "solve_2phs_simplex phase 1 initial tableau:"
 	print(msg + (90-len(msg))*"-" + "\n", std_form_phs1) #muhakkak kalacak bir print
 
-	w_prime, phs1_output = solve_phs1(std_form_phs1)
-	
+	phs1_output = solve_phs1(std_form_phs1)
+	w_prime = phs1_output[0,-1]
+
 	msg = "solve_2phs_simplex phase 1 output:"
 	print(msg + (90-len(msg))*"-" + "\n", phs1_output) #muhakkak kalacak bir print
 
@@ -61,7 +64,10 @@ def solve_2phs_simplex(lp: linp.LP, obj_type):
 		msg = "solve_2phs_simplex phase 2 input:"
 		print(msg + (90-len(msg))*"-" + "\n", std_form_phs2) #muhakkak kalacak bir print
 
-		return solve_phs2(std_form_phs2, obj_type)
+		fin_tabl = solve_simplex(std_form_phs2, obj_type)
+		bv, nbv = bv_nbv(fin_tabl, lp.distinct_vars)
+
+		print(f"optimal solution is found to be:{fin_tabl[0,-1]}\nwith basic variables valued at: {bv}")
 
 	elif round(w_prime, 10) > 0: 
 		print("there are no optimal feasible solutions available for this linear program")
@@ -84,10 +90,10 @@ def solve_phs2(std_form, obj_type):
 
 def check_opt(step, obj_type) -> bool:
 	if obj_type == "max":
-		return not np.any(step[0,1:-1]<0)
+		return not np.any(step[0,1:-1] < -1e-10)
 
 	elif obj_type == "min":
-		return not np.any(step[0,1:-1]>0)
+		return not np.any(step[0,1:-1] > +1e-10)
 
 def pivot(step, obj_type):
 	if obj_type == "max":
