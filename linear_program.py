@@ -41,7 +41,7 @@ class LP():
         alph = {"z":0, "w":1, "x":2, "s":3, "e":3, "a":4}
         for item in cnn:
             for v in item.keys():
-                if v in d_vs.values():
+                if v in d_vs:
                     pass
                 else:
                     appended = False
@@ -119,5 +119,23 @@ class LP():
         return True
 
 
-    def constructPhs2(self):
-        pass
+    def constructPhs2(self, phs1_output):
+        std_tableau_phs2 = phs1_output
+        temp_distincvars = self.distinct_vars.copy()
+        print(std_tableau_phs2)
+        i = 0
+        while i < std_tableau_phs2.shape[1]-1:
+            if std_tableau_phs2[0, i] < -1e-10:
+                std_tableau_phs2 = np.delete(std_tableau_phs2, i, 1)
+                temp_distincvars.pop(i)
+                print(std_tableau_phs2)
+            else:
+                i = i+1
+        
+        self.obj.parse2mono()
+        old_cnn_row = self.obj.canon_row()[0]
+        for i, vars in enumerate(temp_distincvars):
+            if vars in old_cnn_row.keys():
+                std_tableau_phs2[0, i] = old_cnn_row[vars]
+
+        return std_tableau_phs2
